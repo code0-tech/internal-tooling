@@ -1,0 +1,2 @@
+[tools]
+postgres = { install_env = { POSTGRES_SKIP_INITDB = "true", POSTGRES_EXTRA_CONFIGURE_OPTIONS="--without-icu" } }
