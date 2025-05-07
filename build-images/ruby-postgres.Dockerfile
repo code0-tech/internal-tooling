@@ -1,5 +1,4 @@
-FROM ghcr.io/code0-tech/build-images/asdf:131.1
-SHELL ["/usr/bin/bash", "-lc"]
+FROM ghcr.io/code0-tech/build-images/mise:131.1
 
 RUN apt-get update && apt-get install \
     build-essential \
@@ -13,10 +12,11 @@ RUN apt-get update && apt-get install \
     libyaml-dev \
     -y
 
-RUN asdf plugin add ruby https://github.com/asdf-vm/asdf-ruby.git
-RUN asdf plugin add postgres https://github.com/smashedtoatoms/asdf-postgres.git
-
-ARG RUBY_VERSION
-RUN asdf install ruby $RUBY_VERSION
 ARG POSTGRES_VERSION
-RUN POSTGRES_EXTRA_CONFIGURE_OPTIONS="--without-icu" POSTGRES_SKIP_INITDB=true asdf install postgres $POSTGRES_VERSION
+ARG RUBY_VERSION
+ADD build-images/mise/mise.ruby-postgres.toml ./mise.toml
+RUN mise trust &&  \
+    mise config set tools.postgres.version $POSTGRES_VERSION -t string && \
+    mise config set tools.ruby.version $RUBY_VERSION -t string && \
+    mise install && \
+    rm mise.toml
